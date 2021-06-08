@@ -54,5 +54,37 @@ also
 
 \end{frame}
 
+%%%
+
+\begin{frame}[fragile]
+
+{\scriptsize
+\begin{semiverbatim}
+(require '[clojure.spec.alpha :as s])
+
+(s/def ::ws (s/* \#(Character/isWhitespace \%)))
+
+(s/def ::sexpr
+  (s/cat
+    :lws ::ws
+    :sexpr (s/alt
+             :list (s/cat :lparen \#(= \( \%)
+                          :sexprs (s/* ::sexpr)
+                          :rparen #(= \) \%))
+             :symbol (s/cat :c #(Character/isJavaIdentifierStart \%)
+                            :cs (s/* #(Character/isJavaIdentifierPart \%)))
+             :int (s/+ #(Character/isDigit \}%)))
+    :rws ::ws))
+
+(s/valid? ::sexpr (seq "(foo (bar 1 2))"))
+; => true
+
+(s/valid? ::sexpr (seq "(foo (bar 1 2)"))
+; => false
+\end{semiverbatim}
+}
+
+\end{frame}
+
 \end{document}
 

@@ -10,5 +10,27 @@
 
 \frame{\titlepage}
 
+%%%
+
+\begin{frame}
+
+\begin{itemize}
+\item The empty string \texttt{\#""} or sequence \texttt{[:cat]}
+\item Literal character \texttt{\#"a"} or element schema \texttt{:int}
+\item Concatenation \texttt{\#"ab"} or \texttt{[:cat :string :int]}
+\item Alternation \texttt{\#"a|b"} or \texttt{[:alt :string :int]}
+\item Kleene Star \texttt{\#"a*"} or \texttt{[:* :int]}
+\end{itemize}
+
+also
+
+\begin{itemize}
+\item Optional \texttt{\#"a?"} or \texttt{[:? :int]}
+\item Kleene Plus \texttt{\#"a+"} or \texttt{[:+ :int]}
+\item Repeat \texttt{\#"a\{1, 5\}"} or \texttt{[:repeat \{:min 1, :max 5\} :int]}
+\end{itemize}
+
+\end{frame}
+
 \end{document}
 

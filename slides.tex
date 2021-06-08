@@ -68,12 +68,12 @@ also
   (s/cat
     :lws ::ws
     :sexpr (s/alt
-             :list (s/cat :lparen \#(= \( \%)
+             :list (s/cat :lparen \#(= \\( \%)
                           :sexprs (s/* ::sexpr)
-                          :rparen #(= \) \%))
+                          :rparen #(= \\) \%))
              :symbol (s/cat :c #(Character/isJavaIdentifierStart \%)
                             :cs (s/* #(Character/isJavaIdentifierPart \%)))
-             :int (s/+ #(Character/isDigit \}%)))
+             :int (s/+ \#(Character/isDigit \\\}%)))
     :rws ::ws))
 
 (s/valid? ::sexpr (seq "(foo (bar 1 2))"))
@@ -83,6 +83,19 @@ also
 ; => false
 \end{semiverbatim}
 }
+
+\end{frame}
+
+%%%
+
+\begin{frame}
+
+\begin{itemize}
+\item \textsc{dfa} (\texttt{grep}, Lex)
+\item \textsc{nfa} (Seqexp)
+\item Backtracking (\textsc{pcre})
+\item Regex derivative parsing (Spec)
+\end{itemize}
 
 \end{frame}
 

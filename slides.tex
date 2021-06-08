@@ -32,5 +32,27 @@ also
 
 \end{frame}
 
+%%%
+
+\begin{frame}[fragile]
+
+{\scriptsize
+\begin{semiverbatim}
+(m/parse
+  [:schema {:registry {"hiccup" [:or
+                                 [:catn
+                                  [:name keyword?]
+                                  [:props [:? [:map-of keyword? any?]]]
+                                  [:children [:* [:schema [:ref "hiccup"]]]]]
+                                 [:or nil? boolean? number? string?]]}}
+   "hiccup"]
+  [:div {:class [:foo :bar]}
+   "Hello, world of data"])
+;=> {:name :div, :props {:class [:foo :bar]}, :children ["Hello, world of data"]}
+\end{semiverbatim}
+}
+
+\end{frame}
+
 \end{document}
 

@@ -167,5 +167,102 @@ Dynamic derivatives & \(O(rn)\) & \(O(n^r)\)
 
 \end{frame}
 
+%%%
+
+\begin{frame}[fragile]
+
+\begin{semiverbatim}
+(defn alt-parser [& parsers]
+  (reduce (fn [parser parser*]
+            (fn [coll]
+              (let [res (parser coll)]
+                (if-not (miu/-invalid? res)
+                  res
+                  (parser* coll)))))
+          parsers))
+\end{semiverbatim}
+
+\end{frame}
+
+%%%
+
+\begin{frame}[fragile]
+
+\begin{semiverbatim}
+(defn *-parser [parser]
+  (letfn [(parser* [vs coll]
+            (let [res (parser coll)]
+              (if-not (miu/-invalid? res)
+                (let [[v coll] res]
+                  (recur (conj vs v) coll))
+                [vs coll])))]
+    (fn [coll] (parser* [] coll))))
+\end{semiverbatim}
+
+\end{frame}
+
+%%%
+
+\begin{frame}[fragile]
+
+\begin{semiverbatim}
+(defn ?-parser [parser]
+  (alt-parser parser (pure-parser nil)))
+\end{semiverbatim}
+
+\begin{semiverbatim}
+(defn +-parser [parser]
+  (map-parser (fn [[v vs]] (cons v vs))
+              (cat-parser parser (*-parser parser))))
+\end{semiverbatim}
+
+\end{frame}
+
+%%%
+
+\begin{frame}[fragile]
+
+\begin{semiverbatim}
+(defn map-parser [f parser]
+  (fn [coll]
+    (let [res (parser coll)]
+      (if-not (miu/-invalid? res)
+        (let [[v coll] res]
+          [(f v) coll])
+        res))))
+\end{semiverbatim}
+
+\end{frame}
+
+%%%
+
+\begin{frame}[fragile]
+
+{\scriptsize
+\begin{semiverbatim}
+(defn repeat-parser [min max parser]
+  (letfn [(compulsories [n vs coll]
+            (if (< n min)
+              (let [res (parser coll)]
+                (if-not (miu/-invalid? res)
+                  (let [[v coll] res]
+                    (recur (inc n) (conj vs v) coll))
+                  res))
+              (optionals n vs coll)))
+
+          (optionals [n vs coll]
+            (if (< n max)
+              (let [res (parser coll)]
+                (if-not (miu/-invalid? res)
+                  (let [[v coll] res]
+                    (recur (inc n) (conj vs v) coll))
+                  [vs coll]))
+              [vs coll])]
+    (fn [coll] (compulsories 0 [] coll)))))
+\end{semiverbatim}
+}
+
+\end{frame}
+
 \end{document}
 

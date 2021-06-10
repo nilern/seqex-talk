@@ -94,8 +94,26 @@ also
 \item \textsc{dfa} (\texttt{grep}, Lex)
 \item \textsc{nfa} (Seqexp)
 \item Backtracking (\textsc{pcre})
-\item Regex derivative parsing (Spec)
+\item Dynamic derivatives (Spec)
 \end{itemize}
+
+\end{frame}
+
+%%%
+
+\begin{frame}
+
+\begin{center}
+\begin{tabular}{c | c c}
+Algorithm & Time usage & Space usage \\
+\hline
+\textsc{dfa} & \(O(n)\) & \(O(1)\) \\
+\textsc{nfa} & \(O(rn)\) & \(O(r)\) \\
+Backtracking & \(O(2^n)\) & \(O(n)\) \\
+Memoized backtracking & \(O(n)\) & \(O(rn)\) \\
+Dynamic derivatives & \(O(rn)\) & \(O(n^r)\)
+\end{tabular}
+\end{center}
 
 \end{frame}
 

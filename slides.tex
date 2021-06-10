@@ -141,5 +141,31 @@ Dynamic derivatives & \(O(rn)\) & \(O(n^r)\)
 
 \end{frame}
 
+%%%
+
+\begin{frame}[fragile]
+
+\begin{semiverbatim}
+(defn pure-parser [v] (fn [coll] [v coll]))
+\end{semiverbatim}
+
+\begin{semiverbatim}
+(defn cat-parser [& parsers]
+  (reduce (fn [parser parser*]
+            (fn [coll]
+              (let [res (parser coll)]
+                (if-not (miu/-invalid? res)
+                  (let [[vs coll] res]
+                    (let [res* (parser* coll)]
+                      (if-not (miu/-invalid? res*)
+                        (let [[v coll] res*]
+                          [(conj vs v) coll])
+                        res*)))
+                  res))))
+          (pure-parser []) parsers))
+\end{semiverbatim}
+
+\end{frame}
+
 \end{document}
 

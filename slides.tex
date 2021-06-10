@@ -117,5 +117,29 @@ Dynamic derivatives & \(O(rn)\) & \(O(n^r)\)
 
 \end{frame}
 
+%%%
+
+\begin{frame}[fragile]
+
+\begin{semiverbatim}
+(defn item-parser [parse-item]
+  (fn [coll]
+    (if (seq coll)
+      (let [res (parse-item (first coll))]
+        (if-not (miu/-invalid? res)
+          [res (rest coll)]
+          res))
+      :malli.core/invalid)))
+\end{semiverbatim}
+
+\begin{semiverbatim}
+(defn end-parser [coll]
+  (if (empty? coll)
+    [nil coll]
+    :malli.core/invalid))
+\end{semiverbatim}
+
+\end{frame}
+
 \end{document}
 

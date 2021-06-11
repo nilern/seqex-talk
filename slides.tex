@@ -264,5 +264,23 @@ Dynamic derivatives & \(O(rn)\) & \(O(n^r)\)
 
 \end{frame}
 
+%%%
+
+\begin{frame}[fragile]
+
+{\scriptsize
+\begin{semiverbatim}
+(m/parse [:cat [:* pos?] [:= 4]] [2 4])
+\end{semiverbatim}
+
+\begin{semiverbatim}
+(let [parse (cat-parser (*-parser (item-parser (m/parser pos?)))
+                        (item-parser (m/parser [:= 4])))]
+  (parse [2 4]))
+\end{semiverbatim}
+}
+
+\end{frame}
+
 \end{document}
 

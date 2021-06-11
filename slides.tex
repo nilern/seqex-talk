@@ -282,5 +282,185 @@ Dynamic derivatives & \(O(rn)\) & \(O(n^r)\)
 
 \end{frame}
 
+%%%
+
+\begin{frame}[fragile]
+
+{\scriptsize
+\begin{semiverbatim}
+(defn *-parser [parser]
+  (letfn [(epsilon (fn [_ vs coll k] (k vs coll)))
+
+          (parser* [stack vs coll k]
+            (park*! stack epsilon vs coll k) ; remember fallback
+            (parser stack coll
+                    (fn [v coll]
+                      (park*! stack parser* (conj vs v) coll k))))] ; TCO
+    (fn [stack coll k] (parser* stack [] coll k))))
+\end{semiverbatim}
+}
+
+\end{frame}
+
+%%%
+
+\begin{frame}[fragile]
+
+{\scriptsize
+\begin{semiverbatim}
+(defn repeat-parser [min max parser]
+  (letfn [(epsilon (fn [_ vs coll k] (k vs coll)))
+
+          (compulsories [stack n vs coll k]
+            (if (< n min)
+              (parser stack coll
+                      (fn [v coll]
+                        (park**! stack compulsories
+                                 (inc n) (conj vs v) coll k))) ; TCO
+              (optionals stack n vs coll k)))
+
+          (optionals [stack n vs coll k]
+            (if (< n max)
+              (do
+                (park*! stack epsilon vs coll k) ; remember fallback
+                (parser stack coll
+                        (fn [v coll]
+                          (park**! stack optionals
+                                   (inc n) (conj vs v) coll k)))) ; TCO
+              (k vs coll)))]
+    (fn [stack coll k] (compulsories stack 0 [] coll k))))
+\end{semiverbatim}
+}
+
+\end{frame}
+
+%%%
+
+\begin{frame}[fragile]
+
+{\scriptsize
+\begin{semiverbatim}
+(defn alt-parser [& parsers]
+  (reduce (fn [parser parser*]
+            (fn [stack coll k]
+              (park! stack parser* coll k) ; remember fallback
+              (parser stack coll k)))
+          parsers))
+\end{semiverbatim}
+}
+
+\end{frame}
+
+%%%
+
+\begin{frame}[fragile]
+
+\begin{semiverbatim}
+(defn item-parser [parse-item]
+  (fn [_ coll k]
+    (when (seq coll)
+      (let [res (parse-item (first coll))]
+        (when-not (miu/-invalid? res)
+          (k res (rest coll)))))))
+\end{semiverbatim}
+
+\begin{semiverbatim}
+(defn end-parser [_ coll k]
+  (when (empty? coll)
+    (k nil coll)))
+\end{semiverbatim}
+
+\end{frame}
+
+%%%
+
+\begin{frame}[fragile]
+
+{\scriptsize
+\begin{semiverbatim}
+(defn cat-parser [& parsers]
+  (let [p (reduce (fn [rest-parser parser]
+                    (fn [stack vs coll k]
+                      (parser stack coll
+                              (fn [v coll]
+                                (rest-parser stack (conj vs v) coll k)))))
+                  (reverse parsers))]
+    (fn [stack coll k] (p stack [] coll k))))
+\end{semiverbatim}
+}
+
+\end{frame}
+
+%%%
+
+\begin{frame}[fragile]
+
+\begin{semiverbatim}
+(defn pure-parser [v] (fn [_ coll k] (k v coll)))
+\end{semiverbatim}
+
+\begin{semiverbatim}
+(defn map-parser [f parser]
+  (fn [stack coll k]
+    (parser stack coll
+            (fn [v coll] (k (f v) coll)))))
+\end{semiverbatim}
+
+\end{frame}
+
+%%%
+
+\begin{frame}[fragile]
+
+{\scriptsize
+\begin{semiverbatim}
+(defn parser [p]
+  (let [p (cat-parser p (end-parser))]
+    (fn [coll]
+      (if (sequential? coll)
+        (let [stack (make-stack)
+              success (volatile! false)
+              result (volatile! nil)]
+          (p stack coll (fn [v _ _]
+                          (vreset! success true)
+                          (vreset! result v)))
+          (if @success
+            (first @result)
+            (loop []
+              (if-some [thunk (pop-thunk! stack)]
+                (do
+                  (thunk)
+                  (if @success
+                    (first @result)
+                    (recur)))
+                :malli.core/invalid))))
+        :malli.core/invalid))))
+\end{semiverbatim}
+}
+
+\end{frame}
+
+%%%
+
+\begin{frame}[fragile]
+
+\begin{semiverbatim}
+(defn make-stack []
+  #?(:clj (ArrayDeque.)
+     :cljs #js []))
+
+(defn- empty-stack? [^ArrayDeque stack]
+  #?(:clj (.isEmpty stack)
+     :cljs (zero? (alength stack))))
+
+(defn park! [^ArrayDeque stack parser coll k]
+  (.push stack #(parser stack coll k)))
+
+(defn pop-thunk! [^ArrayDeque stack]
+  (when-not (empty-stack? stack) (.pop stack)))
+\end{semiverbatim}
+
+\end{frame}
+
 \end{document}
 

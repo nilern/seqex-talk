@@ -187,11 +187,28 @@ Dynamic derivatives & \(O(rn)\) & \(O(n^r)\)
 %%%
 
 \begin{frame}[fragile]
-\frametitle{Concatenation Parser}
+\frametitle{Unit \& Functor Parsers}
 
 \begin{semiverbatim}
 (defn pure-parser [v] (fn [coll] [v coll]))
 \end{semiverbatim}
+
+\begin{semiverbatim}
+(defn map-parser [f parser]
+  (fn [coll]
+    (let [res (parser coll)]
+      (if-not (miu/-invalid? res)
+        (let [[v coll] res]
+          [(f v) coll])
+        res))))
+\end{semiverbatim}
+
+\end{frame}
+
+%%%
+
+\begin{frame}[fragile]
+\frametitle{Concatenation Parser}
 
 \begin{semiverbatim}
 (defn cat-parser [& parsers]
@@ -250,41 +267,6 @@ Dynamic derivatives & \(O(rn)\) & \(O(n^r)\)
 %%%
 
 \begin{frame}[fragile]
-\frametitle{Derived Parsers}
-
-\begin{semiverbatim}
-(defn ?-parser [parser]
-  (alt-parser parser (pure-parser nil)))
-\end{semiverbatim}
-
-\begin{semiverbatim}
-(defn +-parser [parser]
-  (map-parser (fn [[v vs]] (cons v vs))
-              (cat-parser parser (*-parser parser))))
-\end{semiverbatim}
-
-\end{frame}
-
-%%%
-
-\begin{frame}[fragile]
-\frametitle{Functor Parser}
-
-\begin{semiverbatim}
-(defn map-parser [f parser]
-  (fn [coll]
-    (let [res (parser coll)]
-      (if-not (miu/-invalid? res)
-        (let [[v coll] res]
-          [(f v) coll])
-        res))))
-\end{semiverbatim}
-
-\end{frame}
-
-%%%
-
-\begin{frame}[fragile]
 \frametitle{Repeat Parser}
 
 {\scriptsize
@@ -310,6 +292,24 @@ Dynamic derivatives & \(O(rn)\) & \(O(n^r)\)
     (fn [coll] (compulsories 0 [] coll)))))
 \end{semiverbatim}
 }
+
+\end{frame}
+
+%%%
+
+\begin{frame}[fragile]
+\frametitle{Derived Parsers}
+
+\begin{semiverbatim}
+(defn ?-parser [parser]
+  (alt-parser parser (pure-parser nil)))
+\end{semiverbatim}
+
+\begin{semiverbatim}
+(defn +-parser [parser]
+  (map-parser (fn [[v vs]] (cons v vs))
+              (cat-parser parser (*-parser parser))))
+\end{semiverbatim}
 
 \end{frame}
 

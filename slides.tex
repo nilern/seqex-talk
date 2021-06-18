@@ -343,6 +343,46 @@ which boils down to
 %%%
 
 \begin{frame}[fragile]
+\frametitle{Base CPS Parsers}
+
+\begin{semiverbatim}
+(defn item-parser [parse-item]
+  (fn [_ coll k]
+    (when (seq coll)
+      (let [res (parse-item (first coll))]
+        (when-not (miu/-invalid? res)
+          (k res (rest coll)))))))
+\end{semiverbatim}
+
+\begin{semiverbatim}
+(defn end-parser [_ coll k]
+  (when (empty? coll)
+    (k nil coll)))
+\end{semiverbatim}
+
+\end{frame}
+
+%%%
+
+\begin{frame}[fragile]
+\frametitle{CPS Utility Parsers}
+
+\begin{semiverbatim}
+(defn pure-parser [v] (fn [_ coll k] (k v coll)))
+\end{semiverbatim}
+
+\begin{semiverbatim}
+(defn map-parser [f parser]
+  (fn [stack coll k]
+    (parser stack coll
+            (fn [v coll] (k (f v) coll)))))
+\end{semiverbatim}
+
+\end{frame}
+
+%%%
+
+\begin{frame}[fragile]
 \frametitle{CPS Parser for Kleene Star}
 
 {\scriptsize
@@ -415,28 +455,6 @@ which boils down to
 %%%
 
 \begin{frame}[fragile]
-\frametitle{Base CPS Parsers}
-
-\begin{semiverbatim}
-(defn item-parser [parse-item]
-  (fn [_ coll k]
-    (when (seq coll)
-      (let [res (parse-item (first coll))]
-        (when-not (miu/-invalid? res)
-          (k res (rest coll)))))))
-\end{semiverbatim}
-
-\begin{semiverbatim}
-(defn end-parser [_ coll k]
-  (when (empty? coll)
-    (k nil coll)))
-\end{semiverbatim}
-
-\end{frame}
-
-%%%
-
-\begin{frame}[fragile]
 \frametitle{CPS Parser for Concatenation}
 
 {\scriptsize
@@ -451,24 +469,6 @@ which boils down to
     (fn [stack coll k] (p stack [] coll k))))
 \end{semiverbatim}
 }
-
-\end{frame}
-
-%%%
-
-\begin{frame}[fragile]
-\frametitle{CPS Utility Parsers}
-
-\begin{semiverbatim}
-(defn pure-parser [v] (fn [_ coll k] (k v coll)))
-\end{semiverbatim}
-
-\begin{semiverbatim}
-(defn map-parser [f parser]
-  (fn [stack coll k]
-    (parser stack coll
-            (fn [v coll] (k (f v) coll)))))
-\end{semiverbatim}
 
 \end{frame}
 

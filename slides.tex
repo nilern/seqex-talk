@@ -323,12 +323,20 @@ Dynamic derivatives & \(O(rn)\) & \(O(n^r)\)
 (m/parse [:cat [:* pos?] [:= 4]] [2 4])
 \end{semiverbatim}
 
+which boils down to
+
 \begin{semiverbatim}
 (let [parse (cat-parser (*-parser (item-parser (m/parser pos?)))
                         (item-parser (m/parser [:= 4])))]
-  (parse [2 4]))
+  (parse [2 4])) ;=> :malli.core/invalid
 \end{semiverbatim}
 }
+
+\begin{itemize}
+\item But it should return \texttt{[[2] 4]}!
+\item Problem: cannot backtrack into previous \texttt{*-parser} loop iteration
+\item Solution: capture continuation inside \texttt{*-parser} loop
+\end{itemize}
 
 \end{frame}
 

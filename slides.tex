@@ -33,13 +33,14 @@
 
 %%%
 
-\begin{frame}
+\begin{frame}[fragile]
 \frametitle{Regex vs. Seqex}
 
 \begin{semiverbatim}
 (m/validate #"foo|bar" "foo") ;=> true
 \end{semiverbatim}
 
+{\scriptsize
 \begin{semiverbatim}
 (m/explain 
   [:* [:cat string? [:alt string? boolean?]]]
@@ -49,6 +50,7 @@
 ;;     :errors (#Error{:path [0 1 0], :in [3], :schema string?, :value 11}
 ;;              #Error{:path [0 1 1], :in [3], :schema boolean?, :value 11})}
 \end{semiverbatim}
+}
 \end{frame}
 
 %%%

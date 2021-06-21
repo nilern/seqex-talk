@@ -34,6 +34,26 @@
 %%%
 
 \begin{frame}
+\frametitle{Regex vs. Seqex}
+
+\begin{semiverbatim}
+(m/validate #"foo|bar" "foo") ;=> true
+\end{semiverbatim}
+
+\begin{semiverbatim}
+(m/explain 
+  [:* [:cat string? [:alt string? boolean?]]]
+  ["-server" "foo" "-verbose" 11 "-user" "joe"])
+;; => {:schema [:* [:cat string? [:alt string? boolean?]]],
+;;     :value ["-server" "foo" "-verbose" 11 "-user" "joe"],
+;;     :errors (#Error{:path [0 1 0], :in [3], :schema string?, :value 11}
+;;              #Error{:path [0 1 1], :in [3], :schema boolean?, :value 11})}
+\end{semiverbatim}
+\end{frame}
+
+%%%
+
+\begin{frame}
 \frametitle{Regex Operators}
 
 \begin{itemize}

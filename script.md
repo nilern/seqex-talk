@@ -44,8 +44,6 @@
 
 # Comparing Algorithms
 
-# PikeVM Thread Deduplication Breakdown
-
 # Base Parsers
 
 * Implementing backtracking parsing, parser combinator style
@@ -87,7 +85,7 @@
 * So to get the continuation we need to CPS convert the parsers manually
 * Explain code
 
-# CPS Unit & FUnctor Parsers
+# CPS Unit & Functor Parsers
 
 # CPS Parser for Kleene Star
 

@@ -176,9 +176,19 @@ Dynamic derivatives & \(O(rn)\) & \(O(n^r)\)
 \end{tabular}
 \end{center}
 
+\begin{center}
+\begin{tabular}{c | c c}
+General approach & Time usage & Space usage \\
+\hline
+Breadth-first search & \(O(n)\) & \(O(n^r)\) \\
+Depth-first search & \(O(2^n)\) & \(O(n)\) \\
+\end{tabular}
+\end{center}
+
 \begin{itemize}
 \item \textsc{dfa} not applicable (infinite alphabet)
-\item \textsc{nfa} seemed the next best, so started with that and adapting the Seqexp code
+\item \textsc{nfa} space deduplication broke down with \texttt{parse},
+    \texttt{encode} and \texttt{decode}
 \end{itemize}
 
 \end{frame}

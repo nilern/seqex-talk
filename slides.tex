@@ -543,6 +543,22 @@ which boils down to
 
 \begin{frame}
 \frametitle{Memoization}
+
+\begin{itemize}
+\item Backtracking still uses \(O(2^n)\) time
+\item As is often the case, we can use caching ("memoization") to trade \(O(n)\) time
+    for \(O(rn)\) space
+\begin{itemize}
+    \item Similar to \textsc{gll} (Instaparse) and Packrat (various \textsc{peg} tools) parsing
+    \item But simpler because I disallowed recursion
+\end{itemize}
+\item To make memoization table per-parse instead of global, need to inject it into parsers
+\begin{itemize}
+    \item Synergy: we already injected the backtracking stack when CPS converting
+\end{itemize}
+\item Had to make the memoization table (mutable hash set) from scratch to avoid frustrating
+    user experience wrt. Cljs transitive dependencies
+\end{itemize}
 \end{frame}
 
 %%%

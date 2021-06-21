@@ -25,6 +25,8 @@
 \item Working full time on open source 05/2021 --
 \begin{itemize}
     \item Or at least that was the initial plan. Life happens.
+    \item https://github.com/nilern
+    \item https://github.com/sponsors/nilern
 \end{itemize}
 \end{itemize}
 \end{frame}
@@ -502,29 +504,6 @@ which boils down to
         :malli.core/invalid))))
 \end{semiverbatim}
 }
-
-\end{frame}
-
-%%%
-
-\begin{frame}[fragile]
-\frametitle{Driver Stack}
-
-\begin{semiverbatim}
-(defn make-stack []
-  #?(:clj (ArrayDeque.)
-     :cljs #js []))
-
-(defn- empty-stack? [^ArrayDeque stack]
-  #?(:clj (.isEmpty stack)
-     :cljs (zero? (alength stack))))
-
-(defn park! [^ArrayDeque stack parser coll k]
-  (.push stack #(parser stack coll k)))
-
-(defn pop-thunk! [^ArrayDeque stack]
-  (when-not (empty-stack? stack) (.pop stack)))
-\end{semiverbatim}
 
 \end{frame}
 
